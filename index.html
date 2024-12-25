@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Info</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://kit.fontawesome.com/33c8925556.js" crossorigin="anonymous"></script>
     <script>
@@ -21,33 +22,39 @@
             Your browser does not support the video tag.
         </video>
     </div>
-    <main class="container">
+    <main class="container text-center">
         <section class="profile">
-            <img src="image.png" alt="Profile Picture of @fentbusgaming" class="profile-img">
+            <img src="image.png" alt="Profile Picture of @fentbusgaming" class="profile-img rounded-circle border border-white mb-3">
             <h1>@fentbusgaming</h1>
             <div id="greeting"></div>
             <div class="icons">
-                <a href="https://www.tiktok.com/" target="_blank" aria-label="TikTok">
+                <a href="https://www.tiktok.com/" target="_blank" aria-label="TikTok" class="mx-2 text-white">
                     <i class="fab fa-tiktok"></i>
                 </a>
-                <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram">
+                <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram" class="mx-2 text-white">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://twitter.com/" target="_blank" aria-label="X (Twitter)">
+                <a href="https://twitter.com/" target="_blank" aria-label="X (Twitter)" class="mx-2 text-white">
                     <i class="fab fa-x-twitter"></i>
                 </a>
-                <a href="https://www.wikipedia.org/" target="_blank" aria-label="Wikipedia">
+                <a href="https://www.wikipedia.org/" target="_blank" aria-label="Wikipedia" class="mx-2 text-white">
                     <i class="fab fa-wikipedia-w"></i>
                 </a>
             </div>
         </section>
 
-        <section class="section">
+        <section class="section my-4">
             <h2>Discord</h2>
-            <a href="https://discord.com/invite/southbronx" class="link-btn" target="_blank">South Bronx</a>
+            <a href="https://discord.com/invite/southbronx" class="btn btn-dark btn-block" target="_blank">South Bronx</a>
         </section>
     </main>
-    <button id="toggle-dark-mode"><i class="fas fa-moon"></i></button>
+    <button id="toggle-dark-mode" class="btn btn-dark position-fixed rounded-circle" style="bottom: 20px; right: 20px;">
+        <i class="fas fa-moon"></i>
+    </button>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         // Greeting based on the time of day
         function updateGreeting() {
