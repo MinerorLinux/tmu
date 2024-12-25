@@ -25,6 +25,7 @@
         <section class="profile">
             <img src="image.png" alt="Profile Picture of @fentbusgaming" class="profile-img">
             <h1>@fentbusgaming</h1>
+            <div id="greeting"></div>
             <div class="icons">
                 <a href="https://www.tiktok.com/" target="_blank" aria-label="TikTok">
                     <i class="fab fa-tiktok"></i>
@@ -43,10 +44,42 @@
 
         <section class="section">
             <h2>Discord</h2>
-            <a href="https://discord.com/invite/kushcord" class="link-btn" target="_blank">Kushcord</a>
             <a href="https://discord.com/invite/southbronx" class="link-btn" target="_blank">South Bronx</a>
         </section>
+        <button id="toggle-dark-mode">Toggle Dark Mode</button>
     </main>
+    <script>
+        // Greeting based on the time of day
+        function updateGreeting() {
+            const greeting = document.getElementById('greeting');
+            const hours = new Date().getHours();
+            let message = '';
+
+            if (hours < 12) {
+                message = 'Good morning!';
+            } else if (hours < 18) {
+                message = 'Good afternoon!';
+            } else {
+                message = 'Good evening!';
+            }
+
+            greeting.textContent = message;
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        document.getElementById('toggle-dark-mode').addEventListener('click', toggleDarkMode);
+
+        // Initial function calls
+        updateGreeting();
+
+        // Add animations
+        document.querySelector('.profile-img').classList.add('animate-profile');
+        document.querySelectorAll('.icons a').forEach(icon => icon.classList.add('animate-icons'));
+    </script>
 </body>
 
 </html>
