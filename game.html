@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horror Game</title>
+  <style>
+    body, html {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Fog for atmosphere
+    scene.fog = new THREE.Fog(0x000000, 5, 50);
+
+    // Lights
+    const light = new THREE.PointLight(0xff0000, 1, 20);
+    light.position.set(0, 2, 0);
+    scene.add(light);
+
+    const ambientLight = new THREE.AmbientLight(0x222222);
+    scene.add(ambientLight);
+
+    // Texture loader
+const textureLoader = new THREE.TextureLoader();
+const wallTexture = textureLoader.load('path/to/your/wall_texture.png'); // Replace with your wall PNG
+const floorTexture = textureLoader.load('path/to/your/floor_texture.png'); // Replace with your floor PNG
+const windowTexture = textureLoader.load('path/to/your/window_texture.png'); // Replace with your window PNG
+
+    // House structure
+    const wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture });
+    const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture });
+
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    scene.add(floor);
+
+    const walls = [];
+    for (let i = 0; i < 4; i++) {
+      const wall = new THREE.Mesh(new THREE.PlaneGeometry(20, 5), wallMaterial);
+      wall.position.y = 2.5;
+      if (i === 0) wall.position.z = -10; // Back wall
+      if (i === 1) wall.position.z = 10;  // Front wall
+      if (i === 2) wall.position.x = -10; wall.rotation.y = Math.PI / 2; // Left wall
+      if (i === 3) wall.position.x = 10; wall.rotation.y = Math.PI / 2; // Right wall
+      walls.push(wall);
+      scene.add(wall);
+    }
+
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), wallMaterial);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.y = 5;
+    scene.add(ceiling);
+
+    // Rain particles
+    const rainGeometry = new THREE.BufferGeometry();
+    const rainCount = 5000;
+    const rainPositions = new Float32Array(rainCount * 3);
+
+    for (let i = 0; i < rainCount; i++) {
+      rainPositions[i * 3] = Math.random() * 20 - 10; // X
+      rainPositions[i * 3 + 1] = Math.random() * 10 + 5; // Y
+      rainPositions[i * 3 + 2] = Math.random() * 20 - 10; // Z
+    }
+
+    rainGeometry.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3));
+    const rainMaterial = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.1 });
+    const rain = new THREE.Points(rainGeometry, rainMaterial);
+    scene.add(rain);
+
+    // Mouse control using Pointer Lock API
+    const controls = { x: 0, y: 0 };
+    document.addEventListener('mousemove', (event) => {
+      if (document.pointerLockElement === document.body) {
+        controls.x -= event.movementX * 0.002;
+        controls.y -= event.movementY * 0.002;
+        controls.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.y));
+      }
+    });
+
+    document.body.addEventListener('click', () => {
+      document.body.requestPointerLock();
+    });
+
+    // Movement
+    const keys = {};
+    document.addEventListener('keydown', (event) => keys[event.key] = true);
+    document.addEventListener('keyup', (event) => keys[event.key] = false);
+
+    const speed = 0.1;
+
+    // Game loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Camera rotation
+      camera.rotation.x = controls.y;
+      camera.rotation.y = controls.x;
+
+      // Movement
+      const forward = new THREE.Vector3(Math.sin(controls.x), 0, Math.cos(controls.x)).multiplyScalar(keys['w'] ? -speed : keys['s'] ? speed : 0);
+      const sideways = new THREE.Vector3(Math.cos(controls.x), 0, -Math.sin(controls.x)).multiplyScalar(keys['a'] ? -speed : keys['d'] ? speed : 0);
+
+      camera.position.add(forward).add(sideways);
+
+      // Rain movement
+      const rainPositions = rain.geometry.attributes.position.array;
+      for (let i = 0; i < rainCount; i++) {
+        rainPositions[i * 3 + 1] -= 0.1;
+        if (rainPositions[i * 3 + 1] < 0) {
+          rainPositions[i * 3 + 1] = Math.random() * 10 + 5;
+        }
+      }
+      rain.geometry.attributes.position.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
