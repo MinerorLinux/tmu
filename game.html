@@ -19,12 +19,30 @@
 <body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script>
+    // Sound setup
+    const ambientSound = new Howl({
+      src: ['path/to/ambient_sound.mp3'], // Replace with your ambient sound path
+      loop: true,
+      volume: 0.5
+    });
+    ambientSound.play();
+
+    const rainSound = new Howl({
+      src: ['path/to/rain_sound.mp3'], // Replace with your rain sound path
+      loop: true,
+      volume: 0.5
+    });
+    rainSound.play();
+
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+
+    // Set initial camera position inside the house
+    camera.position.set(0, 1.5, 0);
 
     // Fog for atmosphere
     scene.fog = new THREE.Fog(0x000000, 5, 50);
@@ -38,14 +56,14 @@
     scene.add(ambientLight);
 
     // Texture loader
-const textureLoader = new THREE.TextureLoader();
-const wallTexture = textureLoader.load('path/to/your/wall_texture.png'); // Replace with your wall PNG
-const floorTexture = textureLoader.load('path/to/your/floor_texture.png'); // Replace with your floor PNG
-const windowTexture = textureLoader.load('path/to/your/window_texture.png'); // Replace with your window PNG
+    const textureLoader = new THREE.TextureLoader();
+    const wallTexture = textureLoader.load('path/to/your/wall_texture.png'); // Replace with your wall PNG
+    const floorTexture = textureLoader.load('path/to/your/floor_texture.png'); // Replace with your floor PNG
+    const windowTexture = textureLoader.load('path/to/your/window_texture.png'); // Replace with your window PNG
 
     // House structure
-    const wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture });
-    const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture });
+    const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture });
+    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
 
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
@@ -105,6 +123,15 @@ const windowTexture = textureLoader.load('path/to/your/window_texture.png'); // 
 
     const speed = 0.1;
 
+    // Collision detection
+    function detectCollision(position) {
+      for (const wall of walls) {
+        const distance = wall.position.distanceTo(position);
+        if (distance < 1) return true;
+      }
+      return false;
+    }
+
     // Game loop
     function animate() {
       requestAnimationFrame(animate);
@@ -117,7 +144,11 @@ const windowTexture = textureLoader.load('path/to/your/window_texture.png'); // 
       const forward = new THREE.Vector3(Math.sin(controls.x), 0, Math.cos(controls.x)).multiplyScalar(keys['w'] ? -speed : keys['s'] ? speed : 0);
       const sideways = new THREE.Vector3(Math.cos(controls.x), 0, -Math.sin(controls.x)).multiplyScalar(keys['a'] ? -speed : keys['d'] ? speed : 0);
 
-      camera.position.add(forward).add(sideways);
+      const newPosition = camera.position.clone().add(forward).add(sideways);
+
+      if (!detectCollision(newPosition)) {
+        camera.position.copy(newPosition);
+      }
 
       // Rain movement
       const rainPositions = rain.geometry.attributes.position.array;
